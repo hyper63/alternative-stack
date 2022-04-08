@@ -1,7 +1,6 @@
 const crypto = require("crypto");
 const fs = require("fs/promises");
 const path = require("path");
-// eslint-disable-next-line no-unused-vars
 const inquirer = require("inquirer");
 
 const sort = require("sort-package-json");
@@ -36,14 +35,11 @@ async function main({ rootDirectory }) {
     fs.rm(path.join(rootDirectory, ".github/PULL_REQUEST_TEMPLATE.md")),
   ]);
 
-  let newEnv = env.replace(/^SESSION_SECRET=.*$/m, `SESSION_SECRET="${getRandomString(16)}"`);
-
   const newPackageJson =
     JSON.stringify(sort({ ...JSON.parse(packageJson), name: APP_NAME }), null, 2) + "\n";
 
   await Promise.all([
     fs.writeFile(APP_ARC_PATH, appArc.replace("remix-hyper-stack-template", APP_NAME)),
-    fs.writeFile(ENV_PATH, newEnv),
     fs.writeFile(PACKAGE_JSON_PATH, newPackageJson),
     fs.writeFile(
       README_PATH,
@@ -51,15 +47,37 @@ async function main({ rootDirectory }) {
     ),
   ]);
 
-  await askSetupQuestions({ rootDirectory }).catch((error) => {
+  const { HYPER } = await askSetupQuestions({ rootDirectory }).catch((error) => {
     if (error.isTtyError) {
       // Prompt couldn't be rendered in the current environment
     } else {
       throw error;
     }
   });
+
+  let newEnv = env
+    .replace(/^SESSION_SECRET=.*$/m, `SESSION_SECRET="${getRandomString(16)}"`)
+    .replace(/^HYPER=.*$/m, `HYPER="${HYPER}"`);
+
+  await Promise.all([fs.writeFile(ENV_PATH, newEnv)]);
 }
 
-async function askSetupQuestions({ rootDirectory }) {}
+async function askSetupQuestions() {
+  let HYPER;
+  const answers = await inquirer.prompt([
+    {
+      name: "connection",
+      type: "input",
+      message: "Please provide a hyper cloud application connection string",
+      default: "cloud://key:secret@cloud.hyper.io/app-name",
+    },
+  ]);
+
+  HYPER = answers.connection;
+
+  console.log(`✅ Project is ready! Start development with "npm run dev"`);
+
+  return { HYPER };
+}
 
 module.exports = main;

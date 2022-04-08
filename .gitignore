@@ -6,6 +6,8 @@ preferences.arc
 sam.json
 sam.yaml
 .env
+hyper-nano
+*.sqlite*
 
 /cypress/screenshots
 /cypress/videos

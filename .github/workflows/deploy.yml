@@ -1,4 +1,5 @@
 name: 🚀 Deploy
+
 on:
   push:
     branches:
@@ -24,7 +25,7 @@ jobs:
       - name: ⎔ Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
@@ -45,7 +46,7 @@ jobs:
       - name: ⎔ Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
@@ -66,7 +67,7 @@ jobs:
       - name: ⎔ Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
@@ -90,7 +91,7 @@ jobs:
       - name: ⎔ Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
@@ -120,7 +121,7 @@ jobs:
       - name: ⎔ Setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 14
+          node-version: 16
 
       - name: 👀 Env
         run: |
@@ -137,21 +138,20 @@ jobs:
       - name: 🏗 Build
         run: npm run build
 
-      - name: 🛠 Install Arc
-        run: npm i -g @architect/architect
-
       - name: 🚀 Staging Deploy
         if: github.ref == 'refs/heads/dev'
-        run: arc deploy --staging --prune
         env:
           CI: true
+          # If separate Staging environment, use staging secrets here
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: npx arc deploy --staging --prune
 
       - name: 🚀 Production Deploy
         if: github.ref == 'refs/heads/main'
-        run: arc deploy --production --prune
         env:
           CI: true
+          # If separate Production environment, use production secrets here
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: npx arc deploy --production --prune

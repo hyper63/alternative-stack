@@ -1,18 +1,15 @@
 {
-  "name": "remix-hyper-stack-template",
+  "name": "remix-hyper-stack",
   "private": true,
-  "description": "",
-  "license": "",
+  "description": "A Remix stack using hyper cloud as a services layer",
+  "license": "Apache-2.0",
   "sideEffects": false,
-  "engines": {
-    "node": ">=14"
-  },
   "scripts": {
     "build": "run-s build:*",
     "build:css": "npm run generate:css -- --minify",
     "build:remix": "remix build",
     "dev": "run-p dev:*",
-    "dev:arc": "node ./dev sandbox",
+    "dev:arc": "node ./arc-dev sandbox",
     "dev:css": "npm run generate:css -- --watch",
     "dev:remix": "remix watch",
     "format": "prettier --write .",
@@ -73,5 +70,8 @@
     "typescript": "^4.6.3",
     "vite-tsconfig-paths": "^3.4.1",
     "vitest": "^0.9.1"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }
