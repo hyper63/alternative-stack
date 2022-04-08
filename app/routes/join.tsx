@@ -1,19 +1,15 @@
-import type {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "@remix-run/node";
+import * as React from "react";
+import type { ActionFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import * as React from "react";
 
-import { getUserId, createUserSession } from "~/session.server";
-
-import { createUser, getUserByEmail } from "~/models/user.server";
 import { validateEmail } from "~/utils";
+import type { ServerContext } from "~/services/types";
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
+export const loader: LoaderFunction = async ({ request, context }) => {
+  const { SessionServer } = context as ServerContext;
+
+  const userId = await SessionServer.getUserId(request);
   if (userId) return redirect("/");
   return json({});
 };
@@ -25,34 +21,27 @@ interface ActionData {
   };
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, context }) => {
+  const { UserServer, SessionServer } = context as ServerContext;
+
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
   const redirectTo = formData.get("redirectTo");
 
   if (!validateEmail(email)) {
-    return json<ActionData>(
-      { errors: { email: "Email is invalid" } },
-      { status: 400 }
-    );
+    return json<ActionData>({ errors: { email: "Email is invalid" } }, { status: 400 });
   }
 
   if (typeof password !== "string") {
-    return json<ActionData>(
-      { errors: { password: "Password is required" } },
-      { status: 400 }
-    );
+    return json<ActionData>({ errors: { password: "Password is required" } }, { status: 400 });
   }
 
   if (password.length < 8) {
-    return json<ActionData>(
-      { errors: { password: "Password is too short" } },
-      { status: 400 }
-    );
+    return json<ActionData>({ errors: { password: "Password is too short" } }, { status: 400 });
   }
 
-  const existingUser = await getUserByEmail(email);
+  const existingUser = await UserServer.getUserByEmail(email);
   if (existingUser) {
     return json<ActionData>(
       { errors: { email: "A user already exists with this email" } },
@@ -60,9 +49,9 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const user = await createUser(email, password);
+  const user = await UserServer.createUser(email, password);
 
-  return createUserSession({
+  return SessionServer.createUserSession({
     request,
     userId: user.id,
     remember: false,
@@ -96,10 +85,7 @@ export default function Join() {
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6" noValidate>
           <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email address
             </label>
             <div className="mt-1">
@@ -124,10 +110,7 @@ export default function Join() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Password
             </label>
             <div className="mt-1">

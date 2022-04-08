@@ -2,17 +2,19 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 
-import { requireUserId } from "~/session.server";
 import { useUser } from "~/utils";
-import { getNoteListItems } from "~/models/note.server";
+import type { ServerContext } from "~/services/types";
+import type { Note } from "~/models/note";
 
 type LoaderData = {
-  noteListItems: Awaited<ReturnType<typeof getNoteListItems>>;
+  noteListItems: Array<Note>;
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await requireUserId(request);
-  const noteListItems = await getNoteListItems({ userId });
+export const loader: LoaderFunction = async ({ request, context }) => {
+  const { SessionServer, NoteServer } = context as ServerContext;
+
+  const parent = await SessionServer.requireUserId(request);
+  const noteListItems = await NoteServer.getNotesByParent({ parent });
   return json<LoaderData>({ noteListItems });
 };
 

@@ -1,10 +1,11 @@
 import type { ActionFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 
-import { createUser } from "~/models/user.server";
-import { createUserSession } from "~/session.server";
+import type { ServerContext } from "~/services/types";
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, context }) => {
+  const { UserServer, SessionServer } = context as ServerContext;
+
   if (process.env.NODE_ENV === "production") {
     console.error(
       "🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨 test routes should not be enabled in production 🚨 🚨 🚨 🚨 🚨 🚨 🚨 🚨"
@@ -23,9 +24,9 @@ export const action: ActionFunction = async ({ request }) => {
     throw new Error("All test emails must end in @example.com");
   }
 
-  const user = await createUser(email, "myreallystrongpassword");
+  const user = await UserServer.createUser(email, "myreallystrongpassword");
 
-  return createUserSession({
+  return SessionServer.createUserSession({
     request,
     userId: user.id,
     remember: true,

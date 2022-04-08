@@ -33,9 +33,12 @@
     "@remix-run/server-runtime": "*",
     "bcryptjs": "2.4.3",
     "cuid": "^2.1.8",
+    "hyper-connect": "^0.1.15",
+    "ramda": "^0.28.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "tiny-invariant": "^1.2.0"
+    "tiny-invariant": "^1.2.0",
+    "zod": "^3.14.4"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.1.1",
@@ -48,6 +51,7 @@
     "@types/architect__functions": "^3.13.6",
     "@types/bcryptjs": "2.4.2",
     "@types/eslint": "^8.4.1",
+    "@types/ramda": "^0.28.7",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@vitejs/plugin-react": "^1.3.0",

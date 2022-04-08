@@ -3,31 +3,33 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useCatch, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 
-import type { Note } from "~/models/note.server";
-import { deleteNote } from "~/models/note.server";
-import { getNote } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
+import type { Note } from "~/models/note";
+import type { ServerContext } from "~/services/types";
 
 type LoaderData = {
   note: Note;
 };
 
-export const loader: LoaderFunction = async ({ request, params }) => {
-  const userId = await requireUserId(request);
+export const loader: LoaderFunction = async ({ request, params, context }) => {
+  const { SessionServer, NoteServer } = context as ServerContext;
+
+  const parent = await SessionServer.requireUserId(request);
   invariant(params.noteId, "noteId not found");
 
-  const note = await getNote({ userId, id: params.noteId });
+  const note = await NoteServer.getNote({ parent, id: params.noteId });
   if (!note) {
     throw new Response("Not Found", { status: 404 });
   }
   return json<LoaderData>({ note });
 };
 
-export const action: ActionFunction = async ({ request, params }) => {
-  const userId = await requireUserId(request);
+export const action: ActionFunction = async ({ request, params, context }) => {
+  const { SessionServer, NoteServer } = context as ServerContext;
+
+  const parent = await SessionServer.requireUserId(request);
   invariant(params.noteId, "noteId not found");
 
-  await deleteNote({ userId, id: params.noteId });
+  await NoteServer.deleteNote({ parent, id: params.noteId });
 
   return redirect("/notes");
 };
