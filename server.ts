@@ -15,11 +15,13 @@ export const handler = createRequestHandler({
   build,
   mode: process.env.NODE_ENV,
   getLoadContext(event): ServerContext {
+    const context: any = { hyper, event };
+
     // Inject side effects into business logic
-    return {
-      UserServer: UserServerFactory({ hyper, event }),
-      NoteServer: NotesServerFactory({ hyper, event }),
-      SessionServer: SessionServerFactory({ hyper, event })
-    };
+    context.UserServer = UserServerFactory(context);
+    context.NoteServer = NotesServerFactory(context);
+    context.SessionServer = SessionServerFactory(context);
+
+    return context as ServerContext;
   },
 });

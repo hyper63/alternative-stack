@@ -1,14 +1,19 @@
-import z from 'zod'
+import z from "zod";
 
-import { IdSchema } from './model'
+import { DocSchema, NoteIdSchema } from "./model";
 
-export const NoteSchema = z.object({
-  id: IdSchema("note"),
-  parent: z.string(),
-  title: z.string(),
-  body: z.string()
-}).passthrough()
-export type Note = z.infer<typeof NoteSchema>
+export const NoteSchema = z
+  .object({
+    id: NoteIdSchema,
+    parent: z.string(),
+    title: z.string(),
+    body: z.string(),
+  })
+  .passthrough();
+export type Note = z.infer<typeof NoteSchema>;
+export type NewNote = Omit<Note, "id">;
 
-export const NewNoteSchema = NoteSchema.omit({ id: true })
-export type NewNote = z.infer<typeof NewNoteSchema>
+export const NoteDocSchema = DocSchema.extend(
+  NoteSchema.extend({ type: z.literal("note") }).omit({ id: true }).shape
+);
+export type NoteDoc = z.infer<typeof NoteDocSchema>;

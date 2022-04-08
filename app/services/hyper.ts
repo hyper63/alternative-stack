@@ -1,32 +1,29 @@
-import z from 'zod'
-import { compose, omit, assoc } from 'ramda'
-import invariant from 'tiny-invariant'
+import { ZodSchema } from "zod";
+import { compose, omit, assoc } from "ramda";
 
-import { connect } from 'hyper-connect'
+import { connect } from "hyper-connect";
 
-invariant(process.env.HYPER, "HYPER environment variable is required")
+import { DocSchema } from "~/models/model";
 
-export const hyper = connect(process.env.HYPER as string)
+if (!process.env.HYPER) {
+  throw new Error("HYPER environment variable is required");
+}
 
-export const DocSchema = z.object({
-  _id: z.string(),
-  type: z.enum(["note", "user", "password"]),
-  createdAt: z.date(),
-  updatedAt: z.date()
-}).passthrough()
+export const hyper = connect(process.env.HYPER as string);
 
-const toId = compose(
-  omit(["_id"]),
-  (doc) => assoc("id", doc._id || doc.id, doc) // use _id over id always
-);
+const toId = compose(omit(["_id"]), (doc) => assoc("id", doc._id, doc));
 
-const toUnderscoreId = compose(
-  omit(["id"]),
-  (doc) => assoc("_id", doc._id || doc.id, doc) // use _id over id always
-);
+const toUnderscoreId = compose(omit(["id"]), (o) => assoc("_id", o.id, o));
 
-export const fromHyper = toId
+export const fromHyper = <s extends ZodSchema = ZodSchema>(schema: s) =>
+  compose((doc) => schema.parse(doc), toId);
+
 export const toHyper = compose(
-  doc => DocSchema.parse(doc),
+  // ensure all required fields are present
+  (model) => DocSchema.parse(model),
+  // update updatedAt
+  assoc("updatedAt", new Date()),
+  // upsert createdAt
+  (model) => assoc("createdAt", model.createdAt || new Date(), model),
   toUnderscoreId
-)
+);

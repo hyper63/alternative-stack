@@ -42,12 +42,9 @@ export interface SessionServer {
 }
 
 export type ServerContext = {
+  hyper: typeof hyper;
+  event: APIGatewayProxyEventV2;
   UserServer: UserServer;
   NoteServer: NoteServer;
   SessionServer: SessionServer;
-};
-
-export type ServerEnvironment = {
-  hyper: typeof hyper;
-  event: APIGatewayProxyEventV2;
 };

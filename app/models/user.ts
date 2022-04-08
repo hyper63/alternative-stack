@@ -1,16 +1,18 @@
-import z from 'zod'
+import z from "zod";
 
-import { IdSchema } from './model';
+import { DocSchema, UserIdSchema } from "./model";
 
+export const EmailSchema = z
+  .string()
+  .email()
+  .transform((val) => val.toLowerCase());
 export const UserSchema = z.object({
-  id: IdSchema("user"),
-  email: z.string(),
-  notes: z.array(IdSchema("note"))
+  id: UserIdSchema,
+  email: EmailSchema,
 });
-export type User = z.infer<typeof UserSchema>
+export type User = z.infer<typeof UserSchema>;
 
-export const PasswordSchema = z.object({
-  password: z.string(),
-  parent: IdSchema("user")
-})
-export type Password = z.infer<typeof PasswordSchema>
+export const UserDocSchema = DocSchema.extend(
+  UserSchema.extend({ type: z.literal("user") }).omit({ id: true }).shape
+);
+export type UserDoc = z.infer<typeof UserDocSchema>;
