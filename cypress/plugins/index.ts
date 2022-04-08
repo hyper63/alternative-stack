@@ -1,7 +1,4 @@
-module.exports = (
-  on: Cypress.PluginEvents,
-  config: Cypress.PluginConfigOptions
-) => {
+module.exports = (on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions) => {
   const isDev = config.watchForFileChanges;
   const port = process.env.PORT ?? (isDev ? "3000" : "8811");
   const configOverrides: Partial<Cypress.PluginConfigOptions> = {

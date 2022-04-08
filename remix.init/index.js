@@ -1,7 +1,7 @@
-const { execSync } = require("child_process");
 const crypto = require("crypto");
 const fs = require("fs/promises");
 const path = require("path");
+// eslint-disable-next-line no-unused-vars
 const inquirer = require("inquirer");
 
 const sort = require("sort-package-json");
@@ -36,28 +36,18 @@ async function main({ rootDirectory }) {
     fs.rm(path.join(rootDirectory, ".github/PULL_REQUEST_TEMPLATE.md")),
   ]);
 
-  const newEnv = env.replace(
-    /^SESSION_SECRET=.*$/m,
-    `SESSION_SECRET="${getRandomString(16)}"`
-  );
+  let newEnv = env.replace(/^SESSION_SECRET=.*$/m, `SESSION_SECRET="${getRandomString(16)}"`);
 
   const newPackageJson =
-    JSON.stringify(
-      sort({ ...JSON.parse(packageJson), name: APP_NAME }),
-      null,
-      2
-    ) + "\n";
+    JSON.stringify(sort({ ...JSON.parse(packageJson), name: APP_NAME }), null, 2) + "\n";
 
   await Promise.all([
-    fs.writeFile(
-      APP_ARC_PATH,
-      appArc.replace("grunge-stack-template", APP_NAME)
-    ),
+    fs.writeFile(APP_ARC_PATH, appArc.replace("remix-hyper-stack-template", APP_NAME)),
     fs.writeFile(ENV_PATH, newEnv),
     fs.writeFile(PACKAGE_JSON_PATH, newPackageJson),
     fs.writeFile(
       README_PATH,
-      readme.replace(new RegExp("RemixGrungeStack", "g"), toLogicalID(APP_NAME))
+      readme.replace(new RegExp("RemixHyperStack", "g"), toLogicalID(APP_NAME))
     ),
   ]);
 
@@ -70,24 +60,6 @@ async function main({ rootDirectory }) {
   });
 }
 
-async function askSetupQuestions({ rootDirectory }) {
-  const answers = await inquirer.prompt([
-    {
-      name: "validate",
-      type: "confirm",
-      default: false,
-      message:
-        "Do you want to run the build/tests/etc to verify things are setup properly?",
-    },
-  ]);
-
-  if (answers.validate) {
-    console.log(
-      `Running the validate script to make sure everything was set up properly`
-    );
-    execSync(`npm run validate`, { stdio: "inherit", cwd: rootDirectory });
-  }
-  console.log(`✅  Project is ready! Start development with "npm run dev"`);
-}
+async function askSetupQuestions({ rootDirectory }) {}
 
 module.exports = main;
