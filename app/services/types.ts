@@ -1,7 +1,7 @@
 import type { Session } from "@remix-run/node";
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
+import type { Hyper } from "hyper-connect";
 
-import { hyper } from "./hyper";
 import type { Note, NewNote } from "~/models/note";
 import type { User } from "~/models/user";
 import type { Password } from "~/models/password";
@@ -42,7 +42,7 @@ export interface SessionServer {
 }
 
 export type ServerContext = {
-  hyper: typeof hyper;
+  hyper: Hyper;
   event: APIGatewayProxyEventV2;
   UserServer: UserServer;
   NoteServer: NoteServer;
