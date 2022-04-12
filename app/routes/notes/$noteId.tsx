@@ -1,7 +1,7 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, useCatch, useLoaderData } from "@remix-run/react";
-import invariant from "tiny-invariant";
+import { z } from "zod";
 
 import type { Note } from "~/models/note";
 import type { ServerContext } from "~/services/types";
@@ -14,9 +14,14 @@ export const loader: LoaderFunction = async ({ request, params, context }) => {
   const { SessionServer, NoteServer } = context as ServerContext;
 
   const parent = await SessionServer.requireUserId(request);
-  invariant(params.noteId, "noteId not found");
 
-  const note = await NoteServer.getNote({ parent, id: params.noteId });
+  const parsed = z.string().safeParse(params.noteId ?? null);
+
+  if (!parsed.success) {
+    throw new Response("noteId query param required", { status: 404 });
+  }
+
+  const note = await NoteServer.getNote({ parent, id: parsed.data });
   if (!note) {
     throw new Response("Not Found", { status: 404 });
   }
@@ -27,9 +32,14 @@ export const action: ActionFunction = async ({ request, params, context }) => {
   const { SessionServer, NoteServer } = context as ServerContext;
 
   const parent = await SessionServer.requireUserId(request);
-  invariant(params.noteId, "noteId not found");
 
-  await NoteServer.deleteNote({ parent, id: params.noteId });
+  const parsed = z.string().safeParse(params.noteId ?? null);
+
+  if (!parsed.success) {
+    throw new Response("noteId query param required", { status: 404 });
+  }
+
+  await NoteServer.deleteNote({ parent, id: parsed.data });
 
   return redirect("/notes");
 };

@@ -4,6 +4,7 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 
 import type { ServerContext } from "~/services/types";
+import { z } from "zod";
 
 type ActionData = {
   errors?: {
@@ -12,22 +13,37 @@ type ActionData = {
   };
 };
 
+const FormDataSchema = z.object({
+  title: z.string(),
+  body: z.string(),
+});
+
 export const action: ActionFunction = async ({ request, context }) => {
   const { SessionServer, NoteServer } = context as ServerContext;
 
   const parent = await SessionServer.requireUserId(request);
 
   const formData = await request.formData();
-  const title = formData.get("title");
-  const body = formData.get("body");
 
-  if (typeof title !== "string" || title.length === 0) {
-    return json<ActionData>({ errors: { title: "Title is required" } }, { status: 400 });
+  const parsed = FormDataSchema.safeParse({
+    title: formData.get("title") ?? null,
+    body: formData.get("body") ?? null,
+  });
+
+  if (!parsed.success) {
+    const errors = parsed.error.format();
+    return json<ActionData>(
+      {
+        errors: {
+          title: errors.title?._errors.join(". "),
+          body: errors.body?._errors.join(". "),
+        },
+      },
+      { status: 400 }
+    );
   }
 
-  if (typeof body !== "string" || body.length === 0) {
-    return json<ActionData>({ errors: { body: "Body is required" } }, { status: 400 });
-  }
+  const { title, body } = parsed.data;
 
   const note = await NoteServer.createNote({ title, body, parent });
 

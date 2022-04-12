@@ -2,9 +2,9 @@ import * as React from "react";
 import type { ActionFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import z from "zod";
 
 import type { ServerContext } from "~/services/types";
-import { validateEmail } from "~/utils";
 
 export const loader: LoaderFunction = async ({ request, context }) => {
   const { SessionServer } = context as ServerContext;
@@ -13,6 +13,11 @@ export const loader: LoaderFunction = async ({ request, context }) => {
   if (userId) return redirect("/");
   return json({});
 };
+
+const FormDataSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
 
 interface ActionData {
   errors?: {
@@ -25,22 +30,28 @@ export const action: ActionFunction = async ({ request, context }) => {
   const { UserServer, SessionServer } = context as ServerContext;
 
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
   const redirectTo = formData.get("redirectTo");
   const remember = formData.get("remember");
 
-  if (!validateEmail(email)) {
-    return json<ActionData>({ errors: { email: "Email is invalid" } }, { status: 400 });
+  const parsed = FormDataSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+
+  if (!parsed.success) {
+    const errors = parsed.error.format();
+    return json<ActionData>(
+      {
+        errors: {
+          email: errors.email?._errors.join(". "),
+          password: errors.password?._errors.join(". "),
+        },
+      },
+      { status: 400 }
+    );
   }
 
-  if (typeof password !== "string") {
-    return json<ActionData>({ errors: { password: "Password is required" } }, { status: 400 });
-  }
-
-  if (password.length < 8) {
-    return json<ActionData>({ errors: { password: "Password is too short" } }, { status: 400 });
-  }
+  const { email, password } = parsed.data;
 
   const user = await UserServer.verifyLogin(email, password);
 

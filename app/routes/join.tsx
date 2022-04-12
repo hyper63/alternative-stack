@@ -2,8 +2,8 @@ import * as React from "react";
 import type { ActionFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
+import { z } from "zod";
 
-import { validateEmail } from "~/utils";
 import type { ServerContext } from "~/services/types";
 
 export const loader: LoaderFunction = async ({ request, context }) => {
@@ -21,25 +21,36 @@ interface ActionData {
   };
 }
 
+const FormDataSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
 export const action: ActionFunction = async ({ request, context }) => {
   const { UserServer, SessionServer } = context as ServerContext;
 
   const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
   const redirectTo = formData.get("redirectTo");
 
-  if (!validateEmail(email)) {
-    return json<ActionData>({ errors: { email: "Email is invalid" } }, { status: 400 });
+  const parsed = FormDataSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
+
+  if (!parsed.success) {
+    const errors = parsed.error.format();
+    return json<ActionData>(
+      {
+        errors: {
+          email: errors.email?._errors.join(". "),
+          password: errors.password?._errors.join(". "),
+        },
+      },
+      { status: 400 }
+    );
   }
 
-  if (typeof password !== "string") {
-    return json<ActionData>({ errors: { password: "Password is required" } }, { status: 400 });
-  }
-
-  if (password.length < 8) {
-    return json<ActionData>({ errors: { password: "Password is too short" } }, { status: 400 });
-  }
+  const { email, password } = parsed.data;
 
   const existingUser = await UserServer.getUserByEmail(email);
   if (existingUser) {
