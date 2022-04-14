@@ -116,6 +116,9 @@ deploy to the `us-west-2` region, if you wish to deploy to a different region,
 you'll need to change your
 [`app.arc`](https://arc.codes/docs/en/reference/project-manifest/aws)
 
+Alternatively, you can set `AWS_REGION` in
+[your GitHub repo's secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+
 ### Hyper Setup
 
 Each environment will need a hyper cloud application backing it. Since this
@@ -135,7 +138,7 @@ Prior to your first deployment, you'll need to do a few things:
 - [Sign up](https://portal.aws.amazon.com/billing/signup#/start) and login to
   your AWS account
 
-- Add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` to
+- Add `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` and `AWS_REGION` to
   [your GitHub repo's secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets).
   Go to your AWS
   [security credentials](https://console.aws.amazon.com/iam/home?region=us-west-2#/security_credentials)
