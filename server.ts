@@ -1,9 +1,7 @@
 import { createRequestHandler } from "@remix-run/architect";
 import * as build from "@remix-run/dev/server-build";
 
-import { hyper } from "~/services/hyper";
-import { NotesServerFactory } from "~/services/note.server";
-import { UserServerFactory } from "~/services/user.server";
+import { services } from "~/services/services";
 
 import { SessionServerFactory } from "~/session.server";
 import { LoaderContext } from "~/types";
@@ -16,11 +14,7 @@ export const handler = createRequestHandler({
   build,
   mode: process.env.NODE_ENV,
   getLoadContext(event): LoaderContext {
-    const context: any = { hyper };
-
-    // Inject side effects into business logic
-    context.UserServer = UserServerFactory(context);
-    context.NoteServer = NotesServerFactory(context);
+    const serverContext = services();
 
     /**
      * Loaders have access to:
@@ -28,7 +22,7 @@ export const handler = createRequestHandler({
      * - SessionServer
      * - ApiGatewayProxyEvent
      *
-     * Business logic is encapsulated, having access to only itself.
+     * Business logic is encapsulated, having access to only itself (see ./services/services.ts).
      * This has lots of benefits:
      * - Business logic is framework agnostic and can be reused
      *   - Remix/NextJS/CRA/Preact
@@ -42,9 +36,9 @@ export const handler = createRequestHandler({
      * For more info, see https://blog.hyper.io/the-perfect-application-architecture/
      */
     return {
-      ...context,
+      ...serverContext,
       event,
-      SessionServer: SessionServerFactory({ ...context, event }),
+      SessionServer: SessionServerFactory({ ...serverContext, event } as LoaderContext),
     };
   },
 });

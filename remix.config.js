@@ -15,11 +15,8 @@ module.exports = {
     return defineRoutes((route) => {
       if (process.env.NODE_ENV === "production") return;
 
-      console.log("⚠️  Test routes enabled.");
-      route(
-        "__tests/create-user",
-        path.join(__dirname, "cypress/support/test-routes/create-user.ts")
-      );
+      console.log("⚠️ Test routes enabled.");
+      route("__tests/delete-user", path.join(__dirname, "test/test-routes/delete-user.ts"));
     });
   },
 };

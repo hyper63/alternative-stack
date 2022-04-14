@@ -1,10 +1,10 @@
 import type { ActionFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 
-import type { ServerContext } from "~/services/types";
+import { LoaderContext } from "~/types";
 
 export const action: ActionFunction = async ({ request, context }) => {
-  const { UserServer, SessionServer } = context as ServerContext;
+  const { UserServer, SessionServer } = context as LoaderContext;
 
   if (process.env.NODE_ENV === "production") {
     console.error(
@@ -24,14 +24,9 @@ export const action: ActionFunction = async ({ request, context }) => {
     throw new Error("All test emails must end in @example.com");
   }
 
-  const user = await UserServer.createUser(email, "myreallystrongpassword");
+  await UserServer.deleteUser(email);
 
-  return SessionServer.createUserSession({
-    request,
-    userId: user.id,
-    remember: true,
-    redirectTo: "/",
-  });
+  return SessionServer.logout(request).catch(() => {});
 };
 
 export default null;
