@@ -12,14 +12,18 @@ export default function Index() {
             <div className="absolute inset-0">
               <img
                 className="h-full w-full object-cover"
-                src="https://user-images.githubusercontent.com/1500684/158276318-61064670-06c3-43f3-86e3-d624785b8ff7.jpg"
-                alt="Nirvana playing on stage with Kurt's jagstang guitar"
+                src="/_static/soundgarden-live.jpeg"
+                alt="Soundgarden playing live"
               />
-              <div className="absolute inset-0 bg-[color:rgba(255,56,56,0.5)] mix-blend-multiply" />
+              <div className="absolute inset-0 bg-[color:rgba(255,188,6,0.5)] mix-blend-multiply" />
             </div>
             <div className="lg:pb-18 relative px-4 pt-16 pb-8 sm:px-6 sm:pt-24 sm:pb-14 lg:px-8 lg:pt-32">
               <h1 className="text-center text-6xl font-extrabold tracking-tight sm:text-8xl lg:text-9xl">
-                <span className="block uppercase text-red-500 drop-shadow-md">Grunge Stack</span>
+                <a href="https://hyper.io">
+                  <span className="block uppercase text-hyper-yellow drop-shadow-md">
+                    Hyper Stack
+                  </span>
+                </a>
               </h1>
               <p className="mx-auto mt-6 max-w-lg text-center text-xl text-white sm:max-w-3xl">
                 Check the README.md file for instructions on how to get this project deployed.
@@ -28,7 +32,7 @@ export default function Index() {
                 {user ? (
                   <Link
                     to="/notes"
-                    className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-red-700 shadow-sm hover:bg-red-50 sm:px-8"
+                    className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-hyper-yellow shadow-sm hover:bg-hyper-yellow-light sm:px-8"
                   >
                     View Notes for {user.email}
                   </Link>
@@ -36,13 +40,13 @@ export default function Index() {
                   <div className="space-y-4 sm:mx-auto sm:inline-grid sm:grid-cols-2 sm:gap-5 sm:space-y-0">
                     <Link
                       to="/join"
-                      className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-red-700 shadow-sm hover:bg-red-50 sm:px-8"
+                      className="flex items-center justify-center rounded-md border border-transparent bg-white px-4 py-3 text-base font-medium text-hyper-yellow-light shadow-sm hover:bg-hyper-yellow sm:px-8"
                     >
                       Sign up
                     </Link>
                     <Link
                       to="/login"
-                      className="flex items-center justify-center rounded-md bg-red-500 px-4 py-3 font-medium text-white hover:bg-red-600  "
+                      className="flex items-center justify-center rounded-md bg-hyper-yellow-light px-4 py-3 font-medium text-white hover:bg-hyper-yellow"
                     >
                       Log In
                     </Link>
@@ -56,6 +60,13 @@ export default function Index() {
                   className="mx-auto mt-16 w-full max-w-[12rem] md:max-w-[16rem]"
                 />
               </a>
+              <a href="https://hyper.io">
+                <img
+                  src="https://raw.githubusercontent.com/hyper63/logos/7d426e3e53c2d8eb626923714018ff4b866c9009/mighty%20light.svg"
+                  alt="Hyper Bolt"
+                  className="mx-auto mt-16 w-full max-w-[10rem] md:max-w-[12rem]"
+                />
+              </a>
             </div>
           </div>
         </div>
@@ -64,14 +75,14 @@ export default function Index() {
           <div className="mt-6 flex flex-wrap justify-center gap-8">
             {[
               {
-                src: "https://user-images.githubusercontent.com/1500684/157991167-651c8fc5-2f72-4afa-94d8-2520ecbc5ebc.svg",
-                alt: "AWS",
-                href: "https://aws.com",
+                src: "https://raw.githubusercontent.com/hyper63/logos/7d426e3e53c2d8eb626923714018ff4b866c9009/hyper-logo.svg",
+                alt: "hyper cloud",
+                href: "https://hyper.io",
               },
               {
-                src: "https://user-images.githubusercontent.com/1500684/157991935-26c0d587-b866-49f5-af34-8f04be1c9df2.svg",
-                alt: "DynamoDB",
-                href: "https://aws.amazon.com/dynamodb/",
+                src: "https://raw.githubusercontent.com/hyper63/logos/7d426e3e53c2d8eb626923714018ff4b866c9009/data.svg",
+                alt: "hyper Data",
+                href: "https://hyper.io/product#data",
               },
               {
                 src: "https://user-images.githubusercontent.com/1500684/157990874-31f015c3-2af7-4669-9d61-519e5ecfdea6.svg",
