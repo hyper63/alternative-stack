@@ -3,15 +3,15 @@ import { json } from "@remix-run/node";
 import { Form, Link, NavLink, Outlet, useLoaderData } from "@remix-run/react";
 
 import { useUser } from "~/utils";
-import type { ServerContext } from "~/services/types";
-import type { Note } from "~/models/note";
+import type { Note } from "~/services/models/note";
+import type { LoaderContext } from "~/types";
 
 type LoaderData = {
   noteListItems: Array<Note>;
 };
 
 export const loader: LoaderFunction = async ({ request, context }) => {
-  const { SessionServer, NoteServer } = context as ServerContext;
+  const { SessionServer, NoteServer } = context as LoaderContext;
 
   const parent = await SessionServer.requireUserId(request);
   const noteListItems = await NoteServer.getNotesByParent({ parent });

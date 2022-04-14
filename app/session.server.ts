@@ -1,6 +1,6 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 
-import type { ServerContext, SessionServer } from "./types";
+import type { LoaderContext, SessionServer } from "./types";
 
 if (!process.env.SESSION_SECRET) {
   throw new Error("SESSION_SECRET must be set");
@@ -20,7 +20,7 @@ export const sessionStorage = createCookieSessionStorage({
 
 const USER_SESSION_KEY = "userId";
 
-export const SessionServerFactory = (env: ServerContext): SessionServer => {
+export const SessionServerFactory = (env: LoaderContext): SessionServer => {
   async function getSession(request: Request) {
     const cookie = request.headers.get("Cookie");
     return sessionStorage.getSession(cookie);

@@ -2,9 +2,9 @@ import * as React from "react";
 import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
-
-import type { ServerContext } from "~/services/types";
 import { z } from "zod";
+
+import { LoaderContext } from "~/types";
 
 type ActionData = {
   errors?: {
@@ -14,12 +14,12 @@ type ActionData = {
 };
 
 const FormDataSchema = z.object({
-  title: z.string(),
-  body: z.string(),
+  title: z.string().min(1),
+  body: z.string().min(1),
 });
 
 export const action: ActionFunction = async ({ request, context }) => {
-  const { SessionServer, NoteServer } = context as ServerContext;
+  const { SessionServer, NoteServer } = context as LoaderContext;
 
   const parent = await SessionServer.requireUserId(request);
 

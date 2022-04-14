@@ -2,10 +2,11 @@ import { createRequestHandler } from "@remix-run/architect";
 import * as build from "@remix-run/dev/server-build";
 
 import { hyper } from "~/services/hyper";
-import { ServerContext } from "~/services/types";
 import { NotesServerFactory } from "~/services/note.server";
-import { SessionServerFactory } from "~/services/session.server";
 import { UserServerFactory } from "~/services/user.server";
+
+import { SessionServerFactory } from "~/session.server";
+import { LoaderContext } from "~/types";
 
 if (process.env.NODE_ENV !== "production") {
   require("./mocks");
@@ -14,14 +15,36 @@ if (process.env.NODE_ENV !== "production") {
 export const handler = createRequestHandler({
   build,
   mode: process.env.NODE_ENV,
-  getLoadContext(event): ServerContext {
-    const context: any = { hyper, event };
+  getLoadContext(event): LoaderContext {
+    const context: any = { hyper };
 
     // Inject side effects into business logic
     context.UserServer = UserServerFactory(context);
     context.NoteServer = NotesServerFactory(context);
-    context.SessionServer = SessionServerFactory(context);
 
-    return context as ServerContext;
+    /**
+     * Loaders have access to:
+     * - Business services
+     * - SessionServer
+     * - ApiGatewayProxyEvent
+     *
+     * Business logic is encapsulated, having access to only itself.
+     * This has lots of benefits:
+     * - Business logic is framework agnostic and can be reused
+     *   - Remix/NextJS/CRA/Preact
+     *   - Vue
+     *   - Svelte
+     *   - CLI :)
+     *
+     * - Easier to test business logic (unit tests!)
+     * - Separation of concerns
+     *
+     * For more info, see https://blog.hyper.io/the-perfect-application-architecture/
+     */
+    return {
+      ...context,
+      event,
+      SessionServer: SessionServerFactory({ ...context, event }),
+    };
   },
 });

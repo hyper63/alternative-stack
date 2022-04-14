@@ -3,8 +3,8 @@ import { json } from "@remix-run/node";
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react";
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
-import type { User } from "./models/user";
-import type { ServerContext } from "./services/types";
+import type { User } from "./services/models/user";
+import type { LoaderContext } from "./types";
 
 export const links: LinksFunction = () => {
   return [
@@ -25,7 +25,7 @@ type LoaderData = {
 };
 
 export const loader: LoaderFunction = async ({ request, context }) => {
-  const { SessionServer } = context as ServerContext;
+  const { SessionServer } = context as LoaderContext;
   return json<LoaderData>({
     user: (await SessionServer.getUser(request)) as User,
   });

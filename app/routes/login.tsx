@@ -4,10 +4,11 @@ import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import z from "zod";
 
-import type { ServerContext } from "~/services/types";
+import { UnauthorizedError } from "~/services/models/err";
+import type { LoaderContext } from "~/types";
 
 export const loader: LoaderFunction = async ({ request, context }) => {
-  const { SessionServer } = context as ServerContext;
+  const { SessionServer } = context as LoaderContext;
 
   const userId = await SessionServer.getUserId(request);
   if (userId) return redirect("/");
@@ -27,7 +28,7 @@ interface ActionData {
 }
 
 export const action: ActionFunction = async ({ request, context }) => {
-  const { UserServer, SessionServer } = context as ServerContext;
+  const { UserServer, SessionServer } = context as LoaderContext;
 
   const formData = await request.formData();
   const redirectTo = formData.get("redirectTo");
@@ -53,18 +54,21 @@ export const action: ActionFunction = async ({ request, context }) => {
 
   const { email, password } = parsed.data;
 
-  const user = await UserServer.verifyLogin(email, password);
+  try {
+    const user = await UserServer.verifyLogin(email, password);
+    return SessionServer.createUserSession({
+      request,
+      userId: user.id,
+      remember: remember === "on" ? true : false,
+      redirectTo: typeof redirectTo === "string" ? redirectTo : "/notes",
+    });
+  } catch (err) {
+    if (err instanceof UnauthorizedError) {
+      return json<ActionData>({ errors: { email: "Invalid email or password" } }, { status: 400 });
+    }
 
-  if (!user) {
-    return json<ActionData>({ errors: { email: "Invalid email or password" } }, { status: 400 });
+    throw err;
   }
-
-  return SessionServer.createUserSession({
-    request,
-    userId: user.id,
-    remember: remember === "on" ? true : false,
-    redirectTo: typeof redirectTo === "string" ? redirectTo : "/notes",
-  });
 };
 
 export const meta: MetaFunction = () => {

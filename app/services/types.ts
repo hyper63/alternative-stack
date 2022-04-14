@@ -1,10 +1,8 @@
-import type { Session } from "@remix-run/node";
-import type { APIGatewayProxyEventV2 } from "aws-lambda";
 import type { Hyper } from "hyper-connect";
 
-import type { Note, NewNote } from "~/models/note";
-import type { User } from "~/models/user";
-import type { Password } from "~/models/password";
+import type { Note, NewNote } from "./models/note";
+import type { User } from "./models/user";
+import type { Password } from "./models/password";
 
 export interface NoteServer {
   getNote({ id, parent }: Pick<Note, "id" | "parent">): Promise<Note | null>;
@@ -18,33 +16,11 @@ export interface UserServer {
   getUserByEmail: (email: User["email"]) => Promise<User | null>;
   createUser: (email: User["email"], password: Password["password"]) => Promise<User>;
   deleteUser: (email: User["email"]) => Promise<void>;
-  verifyLogin: (email: User["email"], password: Password["password"]) => Promise<User | null>;
-}
-
-export interface SessionServer {
-  getSession(request: Request): Promise<Session>;
-  getUserId(request: Request): Promise<User["id"] | undefined>;
-  getUser(request: Request): Promise<null | User>;
-  requireUserId(request: Request, redirectTo?: string): Promise<User["id"]>;
-  requireUser(request: Request): Promise<User>;
-  createUserSession({
-    request,
-    userId,
-    remember,
-    redirectTo,
-  }: {
-    request: Request;
-    userId: string;
-    remember: boolean;
-    redirectTo: string;
-  }): Promise<Response>;
-  logout(request: Request): Promise<Response>;
+  verifyLogin: (email: User["email"], password: Password["password"]) => Promise<User>;
 }
 
 export type ServerContext = {
   hyper: Hyper;
-  event: APIGatewayProxyEventV2;
   UserServer: UserServer;
   NoteServer: NoteServer;
-  SessionServer: SessionServer;
 };

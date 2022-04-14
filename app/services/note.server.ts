@@ -1,24 +1,36 @@
 import cuid from "cuid";
 
-import { NoteSchema } from "~/models/note";
-import { NoteIdSchema } from "~/models/model";
-import type { NoteDoc } from "~/models/note";
+import type { NoteDoc } from "./models/note";
+import { NoteSchema } from "./models/note";
+import { NoteIdSchema } from "./models/model";
+import { NotFoundError } from "./models/err";
 
 import { fromHyper, toHyper } from "./hyper";
 import type { NoteServer, ServerContext } from "./types";
 
 export const NotesServerFactory = (env: ServerContext): NoteServer => ({
-  async getNote({ id }) {
+  async getNote({ id }): ReturnType<NoteServer["getNote"]> {
     const { hyper } = env;
 
     id = NoteIdSchema.parse(id);
-    const noteDoc = await hyper.data.get(id);
-    return fromHyper(NoteSchema)(noteDoc);
+    const res = await hyper.data.get(id);
+
+    if (!res.ok && res.status === 404) {
+      return null;
+    }
+
+    return fromHyper(NoteSchema)(res as NoteDoc);
   },
 
-  async getNotesByParent({ parent }) {
+  async getNotesByParent({ parent }): ReturnType<NoteServer["getNotesByParent"]> {
     // check hyper cache
-    const { hyper } = env;
+    const { hyper, UserServer } = env;
+
+    const user = await UserServer.getUserById(parent);
+
+    if (!user) {
+      throw new NotFoundError(`parent with id ${parent} not found`);
+    }
 
     const { docs } = await hyper.data.query<NoteDoc>({
       type: "note",
@@ -27,8 +39,14 @@ export const NotesServerFactory = (env: ServerContext): NoteServer => ({
     return docs.map(fromHyper(NoteSchema));
   },
 
-  async createNote({ body, title, parent }) {
-    const { hyper } = env;
+  async createNote({ body, title, parent }): ReturnType<NoteServer["createNote"]> {
+    const { hyper, UserServer } = env;
+
+    const user = await UserServer.getUserById(parent);
+
+    if (!user) {
+      throw new NotFoundError(`parent with id ${parent} not found`);
+    }
 
     // TODO: invalidate cache
     const newNote = NoteSchema.parse({
@@ -41,7 +59,7 @@ export const NotesServerFactory = (env: ServerContext): NoteServer => ({
     return newNote;
   },
 
-  async deleteNote({ id }) {
+  async deleteNote({ id }): ReturnType<NoteServer["deleteNote"]> {
     const { hyper } = env;
 
     // TODO: invalidate cache

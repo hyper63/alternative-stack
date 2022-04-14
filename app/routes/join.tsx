@@ -4,10 +4,12 @@ import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import { z } from "zod";
 
-import type { ServerContext } from "~/services/types";
+import { ConflictError } from "~/services/models/err";
+
+import type { LoaderContext } from "~/types";
 
 export const loader: LoaderFunction = async ({ request, context }) => {
-  const { SessionServer } = context as ServerContext;
+  const { SessionServer } = context as LoaderContext;
 
   const userId = await SessionServer.getUserId(request);
   if (userId) return redirect("/");
@@ -27,7 +29,7 @@ const FormDataSchema = z.object({
 });
 
 export const action: ActionFunction = async ({ request, context }) => {
-  const { UserServer, SessionServer } = context as ServerContext;
+  const { UserServer, SessionServer } = context as LoaderContext;
 
   const formData = await request.formData();
   const redirectTo = formData.get("redirectTo");
@@ -52,22 +54,24 @@ export const action: ActionFunction = async ({ request, context }) => {
 
   const { email, password } = parsed.data;
 
-  const existingUser = await UserServer.getUserByEmail(email);
-  if (existingUser) {
-    return json<ActionData>(
-      { errors: { email: "A user already exists with this email" } },
-      { status: 400 }
-    );
+  try {
+    const user = await UserServer.createUser(email, password);
+    return SessionServer.createUserSession({
+      request,
+      userId: user.id,
+      remember: false,
+      redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
+    });
+  } catch (err) {
+    if (err instanceof ConflictError) {
+      return json<ActionData>(
+        { errors: { email: "A user already exists with this email" } },
+        { status: 400 }
+      );
+    }
+
+    throw err;
   }
-
-  const user = await UserServer.createUser(email, password);
-
-  return SessionServer.createUserSession({
-    request,
-    userId: user.id,
-    remember: false,
-    redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
-  });
 };
 
 export const meta: MetaFunction = () => {

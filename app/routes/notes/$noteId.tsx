@@ -3,19 +3,21 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useCatch, useLoaderData } from "@remix-run/react";
 import { z } from "zod";
 
-import type { Note } from "~/models/note";
-import type { ServerContext } from "~/services/types";
+import type { Note } from "~/services/models/note";
+import type { LoaderContext } from "~/types";
 
 type LoaderData = {
   note: Note;
 };
 
+const NoteIdSchema = z.string().min(1);
+
 export const loader: LoaderFunction = async ({ request, params, context }) => {
-  const { SessionServer, NoteServer } = context as ServerContext;
+  const { SessionServer, NoteServer } = context as LoaderContext;
 
   const parent = await SessionServer.requireUserId(request);
 
-  const parsed = z.string().safeParse(params.noteId ?? null);
+  const parsed = NoteIdSchema.safeParse(params.noteId);
 
   if (!parsed.success) {
     throw new Response("noteId query param required", { status: 404 });
@@ -29,11 +31,11 @@ export const loader: LoaderFunction = async ({ request, params, context }) => {
 };
 
 export const action: ActionFunction = async ({ request, params, context }) => {
-  const { SessionServer, NoteServer } = context as ServerContext;
+  const { SessionServer, NoteServer } = context as LoaderContext;
 
   const parent = await SessionServer.requireUserId(request);
 
-  const parsed = z.string().safeParse(params.noteId ?? null);
+  const parsed = NoteIdSchema.safeParse(params.noteId);
 
   if (!parsed.success) {
     throw new Response("noteId query param required", { status: 404 });

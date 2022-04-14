@@ -1,10 +1,10 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 
-import type { ServerContext } from "~/services/types";
+import type { LoaderContext } from "~/types";
 
 export const action: ActionFunction = async ({ request, context }) => {
-  const { SessionServer } = context as ServerContext;
+  const { SessionServer } = context as LoaderContext;
 
   return SessionServer.logout(request);
 };
