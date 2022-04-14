@@ -14,6 +14,6 @@ export type Note = z.infer<typeof NoteSchema>;
 export type NewNote = Omit<Note, "id">;
 
 export const NoteDocSchema = DocSchema.extend(
-  NoteSchema.extend({ type: z.literal("note") }).omit({ id: true }).shape
+  NoteSchema.extend({ _id: NoteIdSchema, type: z.literal("note") }).omit({ id: true }).shape
 );
 export type NoteDoc = z.infer<typeof NoteDocSchema>;

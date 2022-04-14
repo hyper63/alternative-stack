@@ -1,13 +1,19 @@
 import bcrypt from "bcryptjs";
 import cuid from "cuid";
 
-import { UserIdSchema } from "./models/model";
+import { DocType, UserIdSchema } from "./models/model";
 import { ConflictError, NotFoundError, UnauthorizedError } from "./models/err";
-import { PasswordDoc, PasswordSchema } from "./models/password";
-import { EmailSchema, UserDoc, UserSchema } from "./models/user";
+import {
+  PasswordDoc,
+  PasswordDocSchema,
+  PasswordObjSchema,
+  PasswordSchema,
+} from "./models/password";
+import { EmailSchema, User, UserDoc, UserDocSchema, UserSchema } from "./models/user";
 
 import { fromHyper, toHyper } from "./hyper";
 import type { ServerContext, UserServer } from "./types";
+import { z } from "zod";
 
 export const UserServerFactory = (env: ServerContext): UserServer => {
   async function getUserById(id: string): ReturnType<UserServer["getUserById"]> {
@@ -20,7 +26,7 @@ export const UserServerFactory = (env: ServerContext): UserServer => {
       return null;
     }
 
-    return fromHyper(UserSchema)(res as UserDoc);
+    return fromHyper.as(UserSchema)(res);
   }
 
   async function getUserByEmail(email: string): ReturnType<UserServer["getUserByEmail"]> {
@@ -33,9 +39,38 @@ export const UserServerFactory = (env: ServerContext): UserServer => {
       return null;
     }
 
-    const user = docs.pop();
+    const user = docs.pop() as UserDoc;
 
-    return user && fromHyper(UserSchema)(user);
+    return user && fromHyper.as(UserSchema)(user);
+  }
+
+  async function getUserAndPassword(
+    email: string
+  ): Promise<{ user: User; password: z.infer<typeof PasswordObjSchema> }> {
+    const { hyper } = env;
+
+    email = EmailSchema.parse(email);
+    const user = await getUserByEmail(email);
+
+    if (!user) {
+      throw new NotFoundError(`user with email ${email} not found`);
+    }
+
+    const { docs } = await hyper.data.query<PasswordDoc>({
+      type: "password",
+      parent: user.id,
+    });
+
+    if (!docs.length) {
+      // TODO: use hyper queue to create job to send alert
+      console.error("A user without a password. Send an alert to a monitoring system...");
+      throw new NotFoundError(`password not found for user with email ${email}`);
+    }
+
+    return {
+      user,
+      password: fromHyper.as(PasswordObjSchema)(docs.pop()),
+    };
   }
 
   async function createUser(email: string, password: string): ReturnType<UserServer["createUser"]> {
@@ -47,32 +82,34 @@ export const UserServerFactory = (env: ServerContext): UserServer => {
       throw new ConflictError(`user with email ${email} already exists`);
     }
 
-    const id = `user-${cuid()}`;
-    const user = UserSchema.parse({
-      id,
-      email,
-    });
+    const userId = `user-${cuid()}`;
+    const user = UserSchema.parse({ id: userId, email });
+    const pw = PasswordSchema.parse(password.trim());
 
-    const hashed = PasswordSchema.parse({
-      password: await bcrypt.hash(password, 10),
-      parent: id,
-    });
-
-    await hyper.data.bulk([user, hashed].map(toHyper));
+    await hyper.data.bulk([
+      toHyper.as(UserDocSchema)({ ...user, type: DocType.enum.user }),
+      toHyper.as(PasswordDocSchema)({
+        id: `password-${cuid()}`,
+        parent: userId,
+        hash: await bcrypt.hash(pw, 10),
+        type: DocType.enum.password,
+      }),
+    ]);
 
     return user;
   }
 
   async function deleteUser(email: string): ReturnType<UserServer["deleteUser"]> {
-    const { hyper } = env;
+    const { hyper, NoteServer } = env;
 
-    email = EmailSchema.parse(email);
-    const user = await getUserByEmail(email);
+    const { user, password } = await getUserAndPassword(email);
+    const notes = await NoteServer.getNotesByParent({ parent: user.id });
 
-    if (!user) {
-      throw new NotFoundError(`user with email ${email} not found`);
-    }
-
+    // delete all user's notes docs
+    await Promise.all(notes.map((n) => NoteServer.deleteNote(n)));
+    // delete the password doc
+    await hyper.data.remove(password.id);
+    // delete user doc
     await hyper.data.remove(user.id);
   }
 
@@ -80,28 +117,14 @@ export const UserServerFactory = (env: ServerContext): UserServer => {
     email: string,
     password: string
   ): ReturnType<UserServer["verifyLogin"]> {
-    const { hyper } = env;
+    const { user, password: pw } = await getUserAndPassword(email);
 
-    email = EmailSchema.parse(email);
-    const user = await getUserByEmail(email);
-
-    if (!user) {
-      throw new NotFoundError(`user with email ${email} not found`);
-    }
-
-    const {
-      docs: [{ password: hash }],
-    } = await hyper.data.query<PasswordDoc>({
-      type: "password",
-      parent: user.id,
-    });
-
-    const isValid = await bcrypt.compare(password, hash);
+    const isValid = await bcrypt.compare(password, pw.hash);
     if (!isValid) {
       throw new UnauthorizedError();
     }
 
-    return fromHyper(UserSchema)(user);
+    return user;
   }
 
   return {

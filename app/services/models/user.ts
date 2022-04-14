@@ -13,6 +13,6 @@ export const UserSchema = z.object({
 export type User = z.infer<typeof UserSchema>;
 
 export const UserDocSchema = DocSchema.extend(
-  UserSchema.extend({ type: z.literal("user") }).omit({ id: true }).shape
+  UserSchema.extend({ _id: UserIdSchema, type: z.literal("user") }).omit({ id: true }).shape
 );
 export type UserDoc = z.infer<typeof UserDocSchema>;

@@ -14,9 +14,9 @@ export interface NoteServer {
 export interface UserServer {
   getUserById: (id: User["id"]) => Promise<User | null>;
   getUserByEmail: (email: User["email"]) => Promise<User | null>;
-  createUser: (email: User["email"], password: Password["password"]) => Promise<User>;
+  createUser: (email: User["email"], password: Password) => Promise<User>;
   deleteUser: (email: User["email"]) => Promise<void>;
-  verifyLogin: (email: User["email"], password: Password["password"]) => Promise<User>;
+  verifyLogin: (email: User["email"], password: Password) => Promise<User>;
 }
 
 export type ServerContext = {
