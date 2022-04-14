@@ -1,5 +1,7 @@
 # Remix Hyper Stack
 
+> WIP. This stack is a work in progress
+
 ![The Remix Hyper Stack](./docs/hyper-stack.png)
 
 Learn more about [Hyper](https://hyper.io)
