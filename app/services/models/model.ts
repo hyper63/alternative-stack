@@ -1,6 +1,6 @@
 import z from "zod";
 
-const IdSchema = (prefix: string) => z.string().regex(new RegExp(`${prefix}-([\\w-]+)$`));
+const IdSchema = (prefix: string) => z.string().regex(new RegExp(`^${prefix}-([\\w-]+)$`));
 
 export const UserIdSchema = IdSchema("user");
 export const NoteIdSchema = IdSchema("note");
