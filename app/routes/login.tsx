@@ -4,7 +4,7 @@ import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import z from "zod";
 
-import { UnauthorizedError } from "~/services/models/err";
+import { NotFoundError, UnauthorizedError } from "~/services/models/err";
 import type { LoaderContext } from "~/types";
 
 export const loader: LoaderFunction = async ({ request, context }) => {
@@ -63,7 +63,7 @@ export const action: ActionFunction = async ({ request, context }) => {
       redirectTo: typeof redirectTo === "string" ? redirectTo : "/notes",
     });
   } catch (err) {
-    if (err instanceof UnauthorizedError) {
+    if (err instanceof UnauthorizedError || err instanceof NotFoundError) {
       return json<ActionData>({ errors: { email: "Invalid email or password" } }, { status: 400 });
     }
 
