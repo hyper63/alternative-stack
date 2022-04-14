@@ -18,8 +18,7 @@
     "test": "vitest",
     "test:e2e:dev": "start-server-and-test dev http://localhost:3000 \"cypress open\"",
     "test:e2e:run": "cross-env PORT=8811 start-server-and-test dev http://localhost:8811 \"cypress run\"",
-    "typecheck": "tsc -b && tsc -b cypress",
-    "validate": "run-p \"test -- --run\" lint typecheck test:e2e:run"
+    "typecheck": "tsc -b && tsc -b cypress"
   },
   "dependencies": {
     "@architect/architect": "^10.2.2",
@@ -58,7 +57,6 @@
     "eslint": "^8.13.0",
     "eslint-config-prettier": "^8.5.0",
     "happy-dom": "^2.55.0",
-    "mock-aws-s3": "^4.0.2",
     "msw": "^0.39.2",
     "npm-run-all": "^4.1.5",
     "prettier": "^2.6.2",
