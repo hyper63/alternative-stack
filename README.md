@@ -127,9 +127,18 @@ application for `staging` and then another for `production` (you get 3 hyper
 cloud applications for **free**, and you can always upgrade them later). Learn
 more [here](https://docs.hyper.io/subscriptions).
 
-Once the hyper applications have been created, set `STAGING_HYPER` and
-`PRODUCTION_HYPER` respectively, in
-[your GitHub repo's secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+Once the hyper applications have been created, set `HYPER` environment variable
+and in `production` and `staging` environments using Arc:
+
+```sh
+npx arc env --add --env staging HYPER cloud://....
+npx arc env --add --env production HYPER cloud://....
+```
+
+> Alternatively, you can set `HYPER` for `staging` and `production` via
+> [your GitHub repo's secrets](https://docs.github.com/en/actions/security-guides/encrypted-secrets)
+> as part of CI.
+> [See the `deploy` step in your `deploy` workflow](./.github/workflows/deploy.yml)
 
 ### Architect Setup
 
