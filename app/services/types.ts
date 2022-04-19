@@ -5,10 +5,10 @@ import type { User } from "./models/user";
 import type { Password } from "./models/password";
 
 export interface NoteServer {
-  getNote({ id, parent }: Pick<Note, "id" | "parent">): Promise<Note | null>;
+  getNote({ id }: Pick<Note, "id">): Promise<Note | null>;
   getNotesByParent({ parent }: Pick<Note, "parent">): Promise<Array<Note>>;
   createNote({ body, title, parent }: NewNote): Promise<Note>;
-  deleteNote({ parent, id }: Pick<Note, "id" | "parent">): Promise<void>;
+  deleteNote({ id }: Pick<Note, "id">): Promise<void>;
 }
 
 export interface UserServer {
