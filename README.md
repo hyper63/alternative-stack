@@ -1,7 +1,5 @@
 # Remix Hyper Stack
 
-> WIP. This stack is a work in progress
-
 ![The Remix Hyper Stack](./docs/hyper-stack.png)
 
 Learn more about [Hyper](https://hyper.io)
@@ -15,13 +13,12 @@ npx create-remix --template hyper63/remix-hyper-stack
 ## What's in the stack
 
 - [AWS deployment](https://aws.com) with [Architect](https://arc.codes/)
-- Production-ready [Hyper Cloud Data Service](https://hyper.io/product#data)
+- [Hyper Cloud](https://hyper.io/product#data) integration via
+  [`hyper-connect`](https://www.npmjs.com/package/hyper-connect)
 - [GitHub Actions](https://github.com/features/actions) for deploy on merge to
   production and staging environments
 - Email/Password Authentication with
   [cookie-based sessions](https://remix.run/docs/en/v1/api/remix#createcookiesessionstorage)
-- Hyper data access via
-  [`hyper-connect`](https://www.npmjs.com/package/hyper-connect)
 - Styling with [Tailwind](https://tailwindcss.com/)
 - End-to-end testing with [Cypress](https://cypress.io)
 - Local third party request mocking with [MSW](https://mswjs.io)
