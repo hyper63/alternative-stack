@@ -12,6 +12,13 @@ type LoaderData = {
 
 const NoteIdSchema = z.string().min(1);
 
+function checkNote(note: Note, parent: string) {
+  if (note.parent !== parent) {
+    console.warn(`user ${parent} attempted to access note ${note.id} belonging to ${note.parent}`);
+    throw new Response("Forbidden", { status: 403 });
+  }
+}
+
 export const loader: LoaderFunction = async ({ request, params, context }) => {
   const { SessionServer, NoteServer } = context as LoaderContext;
 
@@ -23,10 +30,13 @@ export const loader: LoaderFunction = async ({ request, params, context }) => {
     throw new Response("noteId query param required", { status: 404 });
   }
 
-  const note = await NoteServer.getNote({ parent, id: parsed.data });
+  const note = await NoteServer.getNote({ id: parsed.data });
   if (!note) {
     throw new Response("Not Found", { status: 404 });
   }
+
+  checkNote(note, parent);
+
   return json<LoaderData>({ note });
 };
 
@@ -41,7 +51,14 @@ export const action: ActionFunction = async ({ request, params, context }) => {
     throw new Response("noteId query param required", { status: 404 });
   }
 
-  await NoteServer.deleteNote({ parent, id: parsed.data });
+  const note = await NoteServer.getNote({ id: parsed.data });
+  if (!note) {
+    throw new Response("Not Found", { status: 404 });
+  }
+
+  checkNote(note, parent);
+
+  await NoteServer.deleteNote(note);
 
   return redirect("/notes");
 };

@@ -13,7 +13,7 @@ import { UserServerFactory } from "./user.server";
 
 const mockNoteServer = {
   getNotesByParent: async () => [{ _id: "note-123", parent: "user-123" }],
-  deleteNote: async () => { },
+  deleteNote: async () => {},
 } as unknown as NoteServer;
 
 // @ts-ignore
