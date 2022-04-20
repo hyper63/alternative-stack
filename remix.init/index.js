@@ -1,3 +1,4 @@
+const { execSync } = require("child_process");
 const crypto = require("crypto");
 const fs = require("fs/promises");
 const path = require("path");
@@ -62,18 +63,35 @@ async function main({ rootDirectory }) {
   await Promise.all([fs.writeFile(ENV_PATH, newEnv)]);
 }
 
-async function askSetupQuestions() {
+async function askSetupQuestions({ rootDirectory }) {
   let HYPER;
-  const answers = await inquirer.prompt([
+
+  const res = await inquirer.prompt([
     {
-      name: "connection",
-      type: "input",
-      message: "Please provide a hyper cloud application connection string",
-      default: "cloud://key:secret@cloud.hyper.io/app-name",
+      name: "nano",
+      type: "confirm",
+      message: "Would you like to use hyper nano ⚡️ for local development?",
+      default: true,
     },
   ]);
 
-  HYPER = answers.connection;
+  if (res.nano) {
+    execSync(`curl https://hyperland.s3.amazonaws.com/hyper -o hyper-nano && chmod +x hyper-nano`, {
+      stdio: "inherit",
+      cwd: rootDirectory,
+    });
+    HYPER = "http://localhost:6363/notes-dev";
+  } else {
+    const answers = await inquirer.prompt([
+      {
+        name: "connection",
+        type: "input",
+        message: "Please provide a hyper cloud application connection string",
+        default: "cloud://key:secret@cloud.hyper.io/app-name",
+      },
+    ]);
+    HYPER = answers.connection;
+  }
 
   console.log(`✅ Project is ready! Start development with "npm run dev"`);
 
