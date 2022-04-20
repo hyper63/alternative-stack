@@ -31,10 +31,6 @@ npx create-remix --template hyper63/remix-hyper-stack
 Not a fan of bits of the stack? Fork it, change it, and use
 `npx create-remix --template your/repo`! Make it your own.
 
-## TODO
-
-- hyper nano integration for local in-memory hyper development
-
 ## Prerequisites
 
 First, you will need to create a hyper cloud application:

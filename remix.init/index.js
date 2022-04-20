@@ -1,3 +1,5 @@
+const { execSync } = require("child_process");
+const { platform, arch } = require("os");
 const crypto = require("crypto");
 const fs = require("fs/promises");
 const path = require("path");
@@ -8,6 +10,28 @@ const { toLogicalID } = require("@architect/utils");
 
 function getRandomString(length) {
   return crypto.randomBytes(length).toString("hex");
+}
+
+function getBinary() {
+  const binaries = {
+    linux: "hyper-x86_64-unknown-linux-gnu",
+    win32: "hyper-x86_64-pc-windows-msvc.exe",
+    darwinx86_64: "hyper-x86_64-apple-darwin",
+    darwinarm64: "hyper-aarch64-apple-darwin",
+  };
+
+  const os = platform();
+  let binary = undefined;
+
+  if (os === "linux" || os === "win32") {
+    binary = binaries[os];
+  } else if (os === "darwin") {
+    // darwin, so if arm64, use aarch64 binary, otherwise use darwin x86-64 binary
+    const architecture = arch() === "arm64" ? "arm64" : "x86_64";
+    binary = binaries[`${os}${architecture}`];
+  }
+
+  return binary;
 }
 
 async function main({ rootDirectory }) {
@@ -62,18 +86,47 @@ async function main({ rootDirectory }) {
   await Promise.all([fs.writeFile(ENV_PATH, newEnv)]);
 }
 
-async function askSetupQuestions() {
+async function askSetupQuestions({ rootDirectory }) {
   let HYPER;
-  const answers = await inquirer.prompt([
+
+  const res = await inquirer.prompt([
     {
-      name: "connection",
-      type: "input",
-      message: "Please provide a hyper cloud application connection string",
-      default: "cloud://key:secret@cloud.hyper.io/app-name",
+      name: "nano",
+      type: "confirm",
+      message: "Would you like to use hyper nano ⚡️ for local development?",
+      default: true,
     },
   ]);
 
-  HYPER = answers.connection;
+  if (res.nano) {
+    const binary = getBinary();
+    if (binary) {
+      execSync(
+        `curl https://hyperland.s3.amazonaws.com/${binary} -o hyper-nano && chmod +x hyper-nano`,
+        {
+          stdio: "inherit",
+          cwd: rootDirectory,
+        }
+      );
+      HYPER = "http://localhost:6363/notes-dev";
+    } else {
+      console.log(
+        `Platform ${platform()} not supported by hyper nano. Skipping hyper nano binary install...`
+      );
+    }
+  }
+
+  if (!HYPER) {
+    const answers = await inquirer.prompt([
+      {
+        name: "connection",
+        type: "input",
+        message: "Please provide a hyper cloud application connection string",
+        default: "cloud://key:secret@cloud.hyper.io/app-name",
+      },
+    ]);
+    HYPER = answers.connection;
+  }
 
   console.log(`✅ Project is ready! Start development with "npm run dev"`);
 

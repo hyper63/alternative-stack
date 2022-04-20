@@ -12,6 +12,7 @@
     "dev:arc": "node ./arc-dev sandbox",
     "dev:css": "npm run generate:css -- --watch",
     "dev:remix": "remix watch",
+    "dev:hyper": "node ./hyper-dev",
     "format": "prettier --write .",
     "generate:css": "tailwindcss -o ./app/styles/tailwind.css",
     "lint": "eslint --cache --cache-location ./node_modules/.cache/eslint .",
