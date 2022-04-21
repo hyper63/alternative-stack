@@ -8,7 +8,7 @@ sam.json
 sam.yaml
 .env
 hyper-nano
-*.sqlite*
+__hyper__
 
 /cypress/screenshots
 /cypress/videos
