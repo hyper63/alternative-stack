@@ -15,6 +15,8 @@ npx create-remix --template hyper63/remix-hyper-stack
 - [AWS deployment](https://aws.com) with [Architect](https://arc.codes/)
 - [Hyper Cloud](https://hyper.io/product#data) integration via
   [`hyper-connect`](https://www.npmjs.com/package/hyper-connect)
+- Zero-setup ⚡️ local development using
+  [`hyper nano`](https://github.com/hyper63/hyper/tree/main/images/nano)
 - [GitHub Actions](https://github.com/features/actions) for deploy on merge to
   production and staging environments
 - Email/Password Authentication with
@@ -33,7 +35,17 @@ Not a fan of bits of the stack? Fork it, change it, and use
 
 ## Prerequisites
 
-First, you will need to create a hyper cloud application:
+This Remix stack sets up a local development stack using
+[`hyper nano`](https://github.com/hyper63/hyper/tree/main/images/nano) ⚡️ an
+in-memory instance of [hyper](https://hyper.io). `hyper nano` works great for
+local development or short-lived, ephemeral environments like GitHub Workspaces
+or GitPod
+
+> At hyper, we exclusively develop using short-lived ephemeral environments
+
+If you choose **_not_** to use `hyper nano`, you will need to create a
+[`hyper cloud application`](https://docs.hyper.io/applications) on
+[hyper cloud](https://dashboard.hyper.io):
 
 - Create a free starter account on [hyper cloud](https://dashboard.hyper.io)
 - Create a free hyper cloud application. Learn more
@@ -124,8 +136,8 @@ application for `staging` and then another for `production` (you get 3 hyper
 cloud applications for **free**, and you can always upgrade them later). Learn
 more [here](https://docs.hyper.io/subscriptions).
 
-Once the hyper applications have been created, set `HYPER` environment variable
-and in `production` and `staging` environments using Arc:
+Once the hyper applications have been created, set the `HYPER` environment
+variable in `production` and `staging` environments using Arc:
 
 ```sh
 npx arc env --add --env staging HYPER cloud://....
