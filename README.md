@@ -261,3 +261,20 @@ It's recommended to install an editor plugin (like the
 [VSCode Prettier plugin](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode))
 to get auto-formatting on save. There's also a `npm run format` script you can
 run to format all files in the project.
+
+## Thank You
+
+We at hyper are very excited about Remix and Remix stacks. A huge shout out to
+the [Remix team](https://remix.run/) and to
+[Kent C. Dodds](https://kentcdodds.com/) for showing us this cool new feature.
+
+Also thank you to the all the maintainers of open source projects that we use.
+In particular:
+
+- [Architect](https://arc.codes)
+- [Zod](https://github.com/colinhacks/zod)
+- [Ramda](https://ramdajs.com/)
+- [Vitest](https://vitest.dev/)
+- [Tailwind](https://tailwindcss.com/)
+
+and many many more!
