@@ -6,6 +6,12 @@ Learn more about [Hyper](https://hyper.io)
 
 Learn more about [Remix Stacks](https://remix.run/stacks).
 
+## Blog Post
+
+Check out
+[our blog post](https://blog.hyper.io/introducing-the-remix-hyper-stack/) on the
+Remix Hyper Stack
+
 ```
 npx create-remix --template hyper63/remix-hyper-stack
 ```
@@ -13,10 +19,14 @@ npx create-remix --template hyper63/remix-hyper-stack
 ## What's in the stack
 
 - [AWS deployment](https://aws.com) with [Architect](https://arc.codes/)
-- [Hyper Cloud](https://hyper.io/product#data) integration via
+- [Hyper Cloud](https://hyper.io) integration via
   [`hyper-connect`](https://www.npmjs.com/package/hyper-connect)
 - Zero-setup ⚡️ local development using
   [`hyper nano`](https://github.com/hyper63/hyper/tree/main/images/nano)
+- [Hyper Vision](https://docs.hyper.io/hyper-vision) support, to peer into your
+  hyper services
+- [GitPod integration](https://gitpod.io/) for developing in ephermeral cloud
+  environments
 - [GitHub Actions](https://github.com/features/actions) for deploy on merge to
   production and staging environments
 - Email/Password Authentication with
@@ -82,6 +92,46 @@ deleting notes.
 - user sessions, and verifying them
   [./app/session.server.ts](./app/session.server.ts)
 
+### Gitpod Integration
+
+The Remix Hyper Stack comes with support for cloud based development, using
+[GitPod](https://gitpod.io). Just initialize the Remix Hyper Stack using the
+Remix CLI, push to Github, and then open in Gitpod by visiting:
+
+```
+https://gitpod.io/#your-repo-url
+```
+
+> You can also use
+> [Gitpod's browser extension](https://www.gitpod.io/docs/browser-extension)
+
+This will build a containerized cloud environment, install dependencies, and
+start up your services for you, a complete **sandboxed** environment. We use a
+[GitPod `.gitpod.yml`](https://www.gitpod.io/docs/config-gitpod-file) to set up
+our Cloud environment and expose our services.
+
+Botch a feature and need to wipe the data? Just open a new Gitpod!
+
+Need to fix a bug? Create an issue and then
+[open the issue in Gitpod](https://www.gitpod.io/docs/context-urls)!
+
+With Gitpod, you no longer have to maintain a local environment. Just spin up a
+new one every time!
+
+### Hyper Sevice Vision 🕶
+
+If you'd like to see what is being stored in your hyper services, you can use
+[Hyper Vision](https://docs.hyper.io/hyper-vision) to peer into your services.
+
+Hyper Vision is a hosted, read-only, hyper service explorer that you can use to
+view your services. Just provide Hyper Vision with your application's hyper
+connection string (`process.env.HYPER`) and it will introspect your services!
+
+> If you're running `hyper nano` locally, you will need to use a proxy to make
+> it accessible on the internet. [ngrok](https://ngrok.com/) is a great tool for
+> this (though if you develop in ephemeral cloud environments like Gitpod, you
+> get this out of the box 😎).
+
 ## Clean Architecture With Hyper
 
 Hyper embraces the
@@ -92,30 +142,36 @@ application.
 
 This has lots of benefits:
 
-- Business logic is _framework_ agnostic and can be reused
-  - Remix/NextJS/CRA/Preact
-  - Vue
-  - Svelte
-  - CLI (The framework doesn't even need to be web based!)
-  - Mobile app
-- Business logic is _infrastructure_ agnostic:
-  - Database
-  - Cloud Provider
-  - Deployment configuration ie. lambda, Docker, K8s, etc.
+- Business logic is _framework_ agnostic
+- Business logic is _infrastructure_ agnostic
 - Easier to test business logic (unit tests and TypeScript cover most of it!)
 - Separation of concerns
 
 **All of the business logic for this application can be found in
 [./app/services](./app/services)**. Each service receives its side effects via
-dependency injection which are then easy to stub during unit testing, while our
-business `models` are simple schemas used to validate the correctness of data
-flowing in and out of our business logic layer.
+[dependency injection](https://martinfowler.com/articles/refactoring-dependencies.html#DependencyInjection)
+which are then easy to stub during unit testing.
 
-You can see the dependency injection in [./server.ts](./server.ts), which also
-uses Remix's
+Our business `models` are simple schemas built on
+[zod](https://github.com/colinhacks/zod) used to validate the correctness of
+data flowing in and out of our business logic layer.
+
+> You could use anything to validate the contracts with your business logic, I
+> chose `zod` because it's what we use at hyper. `Joi`, `Yup`, there are tons of
+> options out there.
+
+Because all side effects are injected via dependency injection, the business
+logic is incredibly easy to test. The business logic is practically fully tested
+using **just unit tests**. (run `npm run test --coverage` to see for yourself)
+
+You can also see dependency injection in [./server.ts](./server.ts), which uses
+Remix's
 [`getLoadContext`](https://remix.run/docs/en/v1/other-api/adapter#createrequesthandler)
 to inject our business services and session handling into our `loaders` and
 `actions`, via `context`.
+
+Learn more
+[from our blog post](https://blog.hyper.io/introducing-the-remix-hyper-stack/#cleanarchitecturewithhyper)
 
 ## Deployment
 
