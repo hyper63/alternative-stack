@@ -21,10 +21,13 @@ export default function Index() {
               <h1 className="text-center text-6xl font-extrabold tracking-tight sm:text-8xl lg:text-9xl">
                 <a href="https://hyper.io">
                   <span className="block uppercase text-hyper-yellow drop-shadow-md">
-                    Hyper Stack
+                    Alternative Stack
                   </span>
                 </a>
               </h1>
+              <p className="mx-auto mt-6 max-w-lg text-center text-xl text-white sm:max-w-3xl">
+                A Remix Stack using Hyper as a services tier
+              </p>
               <p className="mx-auto mt-6 max-w-lg text-center text-xl text-white sm:max-w-3xl">
                 Check the README.md file for instructions on how to get this project deployed.
               </p>

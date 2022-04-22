@@ -1,5 +1,5 @@
 @app
-remix-hyper-stack
+alternative-stack
 
 @http
 /*
