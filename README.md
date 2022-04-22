@@ -1,6 +1,9 @@
-# Remix Hyper Stack
+# Alternative Stack
 
-![The Remix Hyper Stack](./docs/hyper-stack.png)
+![The Alternative Stack](./docs/alternative-stack.png)
+
+The Alternative Stack is a [Remix Stacks](https://remix.run/stacks) using
+[Hyper](https://hyper.io) as a services tier
 
 Learn more about [Hyper](https://hyper.io)
 
@@ -9,11 +12,11 @@ Learn more about [Remix Stacks](https://remix.run/stacks).
 ## Blog Post
 
 Check out
-[our blog post](https://blog.hyper.io/introducing-the-remix-hyper-stack/) on the
-Remix Hyper Stack
+[our blog post](https://blog.hyper.io/introducing-the-alternative-stack/) on the
+Alternative Stack
 
 ```
-npx create-remix --template hyper63/remix-hyper-stack
+npx create-remix --template hyper63/alternative-stack
 ```
 
 ## What's in the stack
@@ -94,8 +97,8 @@ deleting notes.
 
 ### Gitpod Integration
 
-The Remix Hyper Stack comes with support for cloud based development, using
-[GitPod](https://gitpod.io). Just initialize the Remix Hyper Stack using the
+The Alternative Stack comes with support for cloud based development, using
+[GitPod](https://gitpod.io). Just initialize the Alternative Stack using the
 Remix CLI, push to Github, and then open in Gitpod by visiting:
 
 ```
@@ -171,7 +174,7 @@ to inject our business services and session handling into our `loaders` and
 `actions`, via `context`.
 
 Learn more
-[from our blog post](https://blog.hyper.io/introducing-the-remix-hyper-stack/#cleanarchitecturewithhyper)
+[from our blog post](https://blog.hyper.io/introducing-the-alternative-stack/#cleanarchitecturewithhyper)
 
 ## Deployment
 
@@ -249,7 +252,7 @@ To find it on AWS, you can search for
 [CloudFormation](https://console.aws.amazon.com/cloudformation/home) (make sure
 you're looking at the correct region!) and find the name of your stack (the name
 is a PascalCased version of what you have in `app.arc`, so by default it's
-RemixHyperStackStaging and RemixHyperStackProduction) that matches what's in
+AlternativeStackStaging and AlternativeStackProduction) that matches what's in
 `app.arc`, you can find all of your app's resources under the "Resources" tab.
 
 ## GitHub Actions

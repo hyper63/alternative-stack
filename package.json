@@ -1,5 +1,5 @@
 {
-  "name": "remix-hyper-stack",
+  "name": "alternative-stack",
   "private": true,
   "description": "A Remix stack using hyper cloud as a services layer",
   "license": "Apache-2.0",
