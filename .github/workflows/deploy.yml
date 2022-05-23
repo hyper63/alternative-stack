@@ -29,6 +29,8 @@ jobs:
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
 
       - name: 🛠 Build
         run: npm run build
@@ -50,6 +52,8 @@ jobs:
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
 
       - name: 🔬 Lint
         run: npm run lint
@@ -71,6 +75,8 @@ jobs:
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
 
       - name: 🔎 Type check
         run: npm run typecheck --if-present
@@ -92,6 +98,8 @@ jobs:
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
 
       - name: ⚡ Run vitest
         run: npm run test -- --coverage
@@ -124,6 +132,8 @@ jobs:
 
       - name: 📥 Download deps
         uses: bahmutov/npm-install@v1
+        with:
+          useLockFile: false
 
       - name: 🏗 Build
         run: npm run build
