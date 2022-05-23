@@ -40,6 +40,8 @@ async function main({ rootDirectory }) {
   const ENV_PATH = path.join(rootDirectory, ".env");
   const PACKAGE_JSON_PATH = path.join(rootDirectory, "package.json");
   const README_PATH = path.join(rootDirectory, "README.md");
+  const GITIGNORE_PATH = path.join(rootDirectory, ".gitignore");
+  const WORKFLOW_PATH = path.join(rootDirectory, ".github", "workflows", "deploy.yml");
 
   const DIR_NAME = path.basename(rootDirectory);
   const SUFFIX = getRandomString(2);
@@ -48,27 +50,36 @@ async function main({ rootDirectory }) {
     // get rid of anything that's not allowed in an app name
     .replace(/[^a-zA-Z0-9-_]/g, "-");
 
-  const [appArc, env, packageJson, readme] = await Promise.all([
+  const [appArc, env, packageJson, readme, gitignore, workflow] = await Promise.all([
     fs.readFile(APP_ARC_PATH, "utf-8"),
     fs.readFile(EXAMPLE_ENV_PATH, "utf-8"),
     fs.readFile(PACKAGE_JSON_PATH, "utf-8"),
     fs.readFile(README_PATH, "utf-8"),
-    fs.rm(path.join(rootDirectory, ".github/ISSUE_TEMPLATE"), {
-      recursive: true,
-    }),
-    fs.rm(path.join(rootDirectory, ".github/PULL_REQUEST_TEMPLATE.md")),
+    fs.readFile(GITIGNORE_PATH, "utf-8"),
+    fs.readFile(WORKFLOW_PATH, "utf-8"),
   ]);
 
   const newPackageJson =
     JSON.stringify(sort({ ...JSON.parse(packageJson), name: APP_NAME }), null, 2) + "\n";
 
   await Promise.all([
-    fs.writeFile(APP_ARC_PATH, appArc.replace("remix-hyper-stack-template", APP_NAME)),
+    fs.writeFile(APP_ARC_PATH, appArc.replace("alternative-stack", APP_NAME)),
+    /**
+     * We treat the stack as a lib and don't include the lockfile in source control.
+     * But when it is cloned, the stack becomes an application and thus _should explicitly_
+     * enforce a lockfile, as it is best practice. These replacements achieve that.
+     */
+    fs.writeFile(GITIGNORE_PATH, gitignore.replace(/#<rm>(.|\n)*#<\/rm>\n/, "")),
+    fs.writeFile(WORKFLOW_PATH, workflow.replace(/useLockFile: false/g, "useLockFile: true")),
     fs.writeFile(PACKAGE_JSON_PATH, newPackageJson),
     fs.writeFile(
       README_PATH,
-      readme.replace(new RegExp("RemixHyperStack", "g"), toLogicalID(APP_NAME))
+      readme.replace(new RegExp("AlternativeStack", "g"), toLogicalID(APP_NAME))
     ),
+    fs.rm(path.join(rootDirectory, ".github/ISSUE_TEMPLATE"), {
+      recursive: true,
+    }),
+    fs.rm(path.join(rootDirectory, ".github/PULL_REQUEST_TEMPLATE.md")),
   ]);
 
   const { HYPER } = await askSetupQuestions({ rootDirectory }).catch((error) => {
