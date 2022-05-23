@@ -4,7 +4,7 @@ import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import { z } from "zod";
 
-import { LoaderContext } from "~/types";
+import type { LoaderContext } from "~/types";
 
 type ActionData = {
   errors?: {

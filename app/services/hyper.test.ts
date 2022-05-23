@@ -2,7 +2,7 @@
 process.env.HYPER = "https://localhost:6363/test";
 
 import { describe, expect, test } from "vitest";
-import { ZodSchema } from "zod";
+import type { ZodSchema } from "zod";
 
 import { fromHyper, hyper, toHyper } from "./hyper";
 

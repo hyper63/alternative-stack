@@ -4,10 +4,10 @@ process.env.HYPER = "https://localhost:6363/test";
 import { describe, expect, test, vi } from "vitest";
 import bcrypt from "bcryptjs";
 
+import type { NoteServer } from "./types";
 import { hyper } from "./hyper";
 import { ConflictError, NotFoundError, UnauthorizedError } from "./models/err";
-import { User } from "./models/user";
-import { NoteServer } from "./types";
+import type { User } from "./models/user";
 
 import { UserServerFactory } from "./user.server";
 

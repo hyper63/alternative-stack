@@ -1,8 +1,8 @@
-import { Session } from "@remix-run/node";
+import type { Session } from "@remix-run/node";
 import type { APIGatewayProxyEventV2 } from "aws-lambda";
 
-import { User } from "./services/models/user";
-import { ServerContext } from "./services/types";
+import type { User } from "./services/models/user";
+import type { ServerContext } from "./services/types";
 
 export interface SessionServer {
   getSession(request: Request): Promise<Session>;

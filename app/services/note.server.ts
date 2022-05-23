@@ -1,6 +1,7 @@
 import cuid from "cuid";
 
-import { NoteSchema, NoteDoc, NoteDocSchema, NewNote } from "./models/note";
+import type { NoteDoc, NewNote } from "./models/note";
+import { NoteSchema, NoteDocSchema } from "./models/note";
 import { DocType, NoteIdSchema } from "./models/model";
 import { NotFoundError } from "./models/err";
 

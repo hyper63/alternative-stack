@@ -1,4 +1,4 @@
-import { z, ZodSchema } from "zod";
+import type { z, ZodSchema } from "zod";
 import { compose, omit, assoc } from "ramda";
 
 import { connect } from "hyper-connect";

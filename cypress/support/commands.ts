@@ -1,10 +1,10 @@
 import faker from "@faker-js/faker";
 
-import { User } from "~/services/models/user";
+import type { User } from "~/services/models/user";
 import { services } from "~/services/services";
 
 import { SessionServerFactory } from "~/session.server";
-import { LoaderContext } from "~/types";
+import type { LoaderContext } from "~/types";
 
 declare global {
   namespace Cypress {

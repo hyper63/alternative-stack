@@ -4,7 +4,7 @@ import * as build from "@remix-run/dev/server-build";
 import { services } from "~/services/services";
 
 import { SessionServerFactory } from "~/session.server";
-import { LoaderContext } from "~/types";
+import type { LoaderContext } from "~/types";
 
 if (process.env.NODE_ENV !== "production") {
   require("./mocks");

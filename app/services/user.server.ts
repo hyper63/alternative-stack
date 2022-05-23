@@ -1,19 +1,16 @@
+import type { z } from "zod";
 import bcrypt from "bcryptjs";
 import cuid from "cuid";
 
 import { DocType, UserIdSchema } from "./models/model";
 import { ConflictError, NotFoundError, UnauthorizedError } from "./models/err";
-import {
-  PasswordDoc,
-  PasswordDocSchema,
-  PasswordObjSchema,
-  PasswordSchema,
-} from "./models/password";
-import { EmailSchema, User, UserDoc, UserDocSchema, UserSchema } from "./models/user";
+import type { PasswordDoc } from "./models/password";
+import { PasswordDocSchema, PasswordObjSchema, PasswordSchema } from "./models/password";
+import type { User, UserDoc } from "./models/user";
+import { EmailSchema, UserDocSchema, UserSchema } from "./models/user";
 
 import { fromHyper, toHyper } from "./hyper";
 import type { ServerContext, UserServer } from "./types";
-import { z } from "zod";
 
 export const UserServerFactory = (env: ServerContext): UserServer => {
   async function getUserById(id: string): ReturnType<UserServer["getUserById"]> {

@@ -3,10 +3,10 @@ process.env.HYPER = "https://localhost:6363/test";
 
 import { describe, expect, test, vi } from "vitest";
 
-import { UserServer } from "./types";
+import type { UserServer } from "./types";
 import { hyper } from "./hyper";
 import { NotFoundError } from "./models/err";
-import { Note } from "./models/note";
+import type { Note } from "./models/note";
 
 import { NotesServerFactory } from "./note.server";
 
