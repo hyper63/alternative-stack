@@ -4,12 +4,9 @@ contact_links:
     url: https://hyper-chat.slack.com/archives/C023YLD15NZ
     about: If you can't get something to work the way you expect, open a question in
       the Hyper Slack support channel.
-  - name: Feature Request
+  - name: "#️⃣ Hyper Slack"
     url: https://hyper.io/slack
-    about: Got an idea for a new feature in Hyper. Pop into Hyper slack and, share it with us.
-  - name: 💬 Hyper Slack
-    url: https://hyper.io/slack
-    about: Interact with other people using Hyper 💿
+    about: Interact with other people using Hyper ⚡️
   - name: 💬 New Updates (Twitter)
     url: https://twitter.com/_hyper_io
     about: Stay up to date with Hyper news on twitter
