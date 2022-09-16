@@ -37,10 +37,17 @@ export const NotesServerFactory = (env: ServerContext): NoteServer => {
     }
 
     // TODO: use hyper cache to instead of querying db
-    const { docs } = await hyper.data.query<NoteDoc>({
+    const res = await hyper.data.query<NoteDoc>({
       type: "note",
       parent,
     });
+
+    if (!res.ok) {
+      throw new Error(res.msg);
+    }
+
+    const { docs } = res;
+
     return docs.map(fromHyper.as(NoteSchema));
   }
 

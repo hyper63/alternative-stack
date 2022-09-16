@@ -30,7 +30,13 @@ export const UserServerFactory = (env: ServerContext): UserServer => {
     const { hyper } = env;
 
     email = EmailSchema.parse(email);
-    const { docs } = await hyper.data.query<UserDoc>({ type: "user", email });
+    const res = await hyper.data.query<UserDoc>({ type: "user", email });
+
+    if (!res.ok) {
+      throw new Error(res.msg);
+    }
+
+    const { docs } = res;
 
     if (!docs.length) {
       return null;
@@ -53,10 +59,16 @@ export const UserServerFactory = (env: ServerContext): UserServer => {
       throw new NotFoundError(`user with email ${email} not found`);
     }
 
-    const { docs } = await hyper.data.query<PasswordDoc>({
+    const res = await hyper.data.query<PasswordDoc>({
       type: "password",
       parent: user.id,
     });
+
+    if (!res.ok) {
+      throw new Error(res.msg);
+    }
+
+    const { docs } = res;
 
     if (!docs.length) {
       // TODO: use hyper queue to create job to send alert
