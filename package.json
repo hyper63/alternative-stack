@@ -22,19 +22,19 @@
     "typecheck": "tsc -b && tsc -b cypress"
   },
   "dependencies": {
-    "@architect/architect": "^10.3.3",
-    "@architect/functions": "^5.1.0",
+    "@architect/architect": "^10.6.0",
+    "@architect/functions": "^5.2.2",
     "@remix-run/architect": "*",
     "@remix-run/node": "*",
     "@remix-run/react": "*",
     "@remix-run/server-runtime": "*",
     "bcryptjs": "2.4.3",
     "cuid": "^2.1.8",
-    "hyper-connect": "^0.2.0",
+    "hyper-connect": "^0.5.1",
     "ramda": "^0.28.0",
-    "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "zod": "^3.17.3"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zod": "^3.19.1"
   },
   "devDependencies": {
     "@faker-js/faker": "^6.3.1",
