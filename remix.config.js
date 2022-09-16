@@ -16,7 +16,9 @@ module.exports = {
       if (process.env.NODE_ENV === "production") return;
 
       console.log("⚠️ Test routes enabled.");
-      route("__tests/delete-user", path.join(__dirname, "test/test-routes/delete-user.ts"));
+
+      const appDir = path.join(__dirname, "app");
+      route("__tests/delete-user", path.relative(appDir, "test/test-routes/delete-user.ts"));
     });
   },
 };
